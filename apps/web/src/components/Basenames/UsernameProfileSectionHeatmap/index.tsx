@@ -113,8 +113,17 @@ export default function UsernameProfileSectionHeatmap() {
   };
 
   const calculateStreaksAndMetrics = (transactions: Transaction[], addrs: Address) => {
+    const isTimestampWithinLast6Months = (timestamp: number): boolean => {
+      const thirtyDaysInSeconds = 6 * 30 * 24 * 60 * 60; // 60 months  in seconds
+      const currentTimeInSeconds = Math.floor(Date.now() / 1000); // Current time in seconds
+  
+      return (currentTimeInSeconds - timestamp) <= thirtyDaysInSeconds;
+    }
     const filteredTransactions = transactions.filter(
       (tx) => tx.from.toLowerCase() === addrs.toLowerCase(),
+    ).filter(
+      (tx) => { return isTimestampWithinLast6Months (parseInt(tx.timeStamp, 10))
+      }
     );
     if (filteredTransactions.length === 0)
       return { uniqueActiveDays: 0, longestStreakDays: 0, currentStreakDays: 0, activityPeriod: 0 };
